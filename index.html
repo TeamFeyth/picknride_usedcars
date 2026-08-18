@@ -1307,17 +1307,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   function apply(to) {
     collect();
     lang = to;
+    /* Only nodes we have a translation for are ever written to, and only
+       nodes we actually translated are ever restored. Anything else is left
+       exactly as it is - CallRail rewrites the phone numbers in place after
+       load, and blindly restoring the snapshot would put the untracked
+       number back on screen and break call attribution. */
     texts.forEach(function (t) {
       var key = norm(t.en);
-      var next = to === 'es' && DICT[key] != null
-        ? t.en.replace(key, DICT[key])   /* keep the original whitespace */
-        : t.en;
-      if (t.node.nodeValue !== next) t.node.nodeValue = next;
+      if (to === 'es') {
+        if (DICT[key] == null) return;
+        /* Preserve the surrounding whitespace, then swap the whole inner
+           string. A .replace(key, ...) would silently no-op on any node whose
+           raw value spans multiple lines, because `key` is collapsed. */
+        var ws = t.en.match(/^(\s*)[\s\S]*?(\s*)$/);
+        t.node.nodeValue = ws[1] + DICT[key] + ws[2];
+        t.done = true;
+      } else if (t.done) {
+        t.node.nodeValue = t.en;
+        t.done = false;
+      }
     });
     attrs.forEach(function (a) {
       var key = norm(a.en);
-      var next = to === 'es' && DICT[key] != null ? DICT[key] : a.en;
-      if (a.el.getAttribute(a.attr) !== next) a.el.setAttribute(a.attr, next);
+      if (to === 'es') {
+        if (DICT[key] == null) return;
+        a.el.setAttribute(a.attr, DICT[key]);
+        a.done = true;
+      } else if (a.done) {
+        a.el.setAttribute(a.attr, a.en);
+        a.done = false;
+      }
     });
     document.documentElement.lang = to === 'es' ? 'es' : 'en';
     document.querySelectorAll('[data-lang-toggle]').forEach(function (btn) {
