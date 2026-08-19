@@ -37,10 +37,13 @@ window.PNR = {
 window.dataLayer = window.dataLayer || [];
 </script>
 
-<script>(function(w,d,s,l,i){if(!i)return;w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
-var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
-j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer',window.PNR.gtmId);</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N98QJB5R');</script>
+<!-- End Google Tag Manager -->
 
 <script>(function(){var s=window.PNR&&window.PNR.callRailSrc;if(!s)return;
 var t=document.createElement('script');t.type='text/javascript';t.async=true;t.src=s;
@@ -521,9 +524,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <section data-screen-label="Hero" style="position: relative; height: 850px; background: #101010">
     <div style="position: absolute; inset: 0">
-      <picture class="slot-pic"><source type="image/webp" srcset="assets/img/hero-768.webp 768w, assets/img/hero-1280.webp 1280w, assets/img/hero-1920.webp 1920w" sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 1920px"><img src="assets/img/hero-1280.jpg" alt="Pick & Ride Auto Sales lot in Houston" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;"></picture>
+      <picture class="slot-pic"><source type="image/webp" srcset="assets/img/hero-768.webp 768w, assets/img/hero-1280.webp 1280w, assets/img/hero-1920.webp 1920w" sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 1920px"><img src="assets/img/hero-1280.jpg" alt="Aerial view of the Pick &amp; Ride Auto Sales lot in Houston" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;"></picture>
     </div>
-    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,14,0.82) 0%, rgba(8,10,14,0.35) 22%, rgba(8,10,14,0.15) 45%, rgba(8,10,14,0.55) 100%); pointer-events: none"></div>
+    <!-- Scrim. The old photo happened to be dark where the copy sits; the lot
+         photo is bright concrete right there, so the gradient now keeps a
+         floor of darkness across the whole band of text instead of thinning
+         out in the middle. Measured on the new image: headline was 2.08:1
+         and the sub-line 2.42:1 against white, both under the 4.5:1 minimum. -->
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,14,0.86) 0%, rgba(8,10,14,0.62) 24%, rgba(8,10,14,0.58) 52%, rgba(8,10,14,0.68) 78%, rgba(8,10,14,0.80) 100%); pointer-events: none"></div>
 
     <header style="position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 40px; max-width: 1320px; margin: 0 auto; padding: 18px 60px">
       <div style="display: flex; align-items: center; gap: 14px">
@@ -1223,6 +1231,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     'Full Name *': 'Nombre completo *',
     'Email Address *': 'Correo electrónico *',
     'Your Message or Question *': 'Tu mensaje o pregunta *',
+    'Aerial view of the Pick & Ride Auto Sales lot in Houston':
+      'Vista aérea del lote de Pick & Ride Auto Sales en Houston',
     'Pick & Ride Auto Sales lot in Houston': 'Lote de Pick & Ride Auto Sales en Houston',
     'Aerial view of the Pick & Ride Auto Sales lot': 'Vista aérea del lote de Pick & Ride Auto Sales',
     'Pick & Ride Auto Sales customer with their new vehicle': 'Cliente de Pick & Ride Auto Sales con su vehículo nuevo',
