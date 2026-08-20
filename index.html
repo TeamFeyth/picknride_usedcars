@@ -1452,7 +1452,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   function T(s){ return (window.PNR_T ? window.PNR_T(s) : s); }
   var CALL_BACK = 'Sorry \u2014 that did not send. Please call us at (832) 262-4073 and we will take care of you.';
 
-  function wire(formId, statusId, build, leadType){
+  /* redirectTo: only the footer form uses it. The test drive form stays
+     inline on purpose - it sits mid-page and sending someone away from the
+     inventory they were reading costs more than the extra tracked URL is
+     worth. Marketing gets its own conversion URL either way, because the
+     thank-you page pushes generate_lead on load. */
+  function wire(formId, statusId, build, leadType, redirectTo){
     var form = document.getElementById(formId);
     if(!form) return;
     var status = document.getElementById(statusId);
@@ -1484,6 +1489,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       /* honeypot + submit-speed: look successful, deliver nothing */
       var hp = form.querySelector('[name=company_website]');
       if((hp && hp.value) || (Date.now() - loadedAt) < 2000){
+        /* Deliberately does NOT redirect. A bot reaching the thank-you page
+           would fire generate_lead and inflate the conversion count. */
         form.querySelectorAll('input,textarea,button,label').forEach(function(el){ el.style.display='none'; });
         say('Thank you. We will be in touch shortly.', true);
         return;
@@ -1521,6 +1528,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return r.json().catch(function(){ return {}; });
       }).then(function(){
         dl.push({event:'generate_lead', lead_type:leadType, page_type:PAGE_TYPE, gclid:attr.gclid||''});
+        if (redirectTo) {
+          /* Only after the Worker answered ok, so the thank-you URL is never
+             reached by a submission that failed to deliver. */
+          var q = '?form=' + encodeURIComponent(leadType);
+          if (attr.gclid) q += '&gclid=' + encodeURIComponent(attr.gclid);
+          window.location.assign(redirectTo + q);
+          return;
+        }
         form.querySelectorAll('input,textarea,button,label').forEach(function(el){ el.style.display='none'; });
         say('Thank you. We will call you shortly at the number you gave us.', true);
       }).catch(function(err){
@@ -1558,7 +1573,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if(!email) return {error:'Please add your email address.', focus:f.querySelector('#ffEmail')};
     if(!ok) return {error:'Please agree to be contacted so we can reply.', focus:f.querySelector('#ffConsent')};
     return { payload: { name:name, phone:phone, email:email, message:msg, van_interest:'General enquiry' }};
-  }, 'footer_contact_form');
+  }, 'footer_contact_form', '/thank-you');
 
   /* ---------- scroll depth ---------- */
   var hit = {};
