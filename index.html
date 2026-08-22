@@ -550,6 +550,74 @@ article[hidden]{ display:none !important; }
 @media (max-width:760px){
   .pnr-lang{ font-size:12px; padding:6px 11px; }
 }
+
+/* ===========================================================
+   Footer + callouts "why us" — correcciones responsive
+   Las reglas de gutter de 1100/760 sólo seleccionaban `section`,
+   así que el <footer> conservaba sus 60px de padding lateral de
+   escritorio y su rejilla rígida 1.25fr / 0.8fr / 1fr hasta abajo.
+   En una tablet de 768–820px eso dejaba la columna del formulario
+   en ~170px: eso es lo que empujaba los campos de nombre / teléfono
+   / correo a una franja apretada contra el borde derecho.
+   =========================================================== */
+
+/* Todo campo del formulario del footer llena su columna como border-box.
+   :not([tabindex]) deja fuera el honeypot, que debe seguir midiendo 1px. */
+#footerForm input:not([type=checkbox]):not([tabindex]),
+#footerForm textarea{
+  width:100% !important; max-width:100% !important; box-sizing:border-box !important;
+}
+
+/* Los seis callouts eran dos contenedores flex de tres. Como una sola
+   rejilla reflowan juntos: 3+3 en escritorio, 2+2+2 en móvil, sin que
+   quede una fila huérfana de uno. minmax(0,224px) permite que encojan
+   en tablet en vez de desbordar. */
+.why-grid{ display:grid !important; grid-template-columns:repeat(3,minmax(0,224px)) !important;
+           justify-content:center !important; gap:20px !important; }
+
+/* ---- tablet ---- */
+@media (max-width:1100px){
+  footer[data-screen-label=Footer]{ padding-left:32px !important; padding-right:32px !important; }
+  footer[data-screen-label=Footer] > div[style*=grid]{
+    grid-template-columns:1fr 1fr !important; gap:40px !important; }
+  /* el formulario es el hijo más ancho: se lleva la fila completa */
+  footer[data-screen-label=Footer] > div[style*=grid] > div:last-child{ grid-column:1 / -1 !important; }
+  footer[data-screen-label=Footer] #footerForm{ max-width:560px !important; }
+}
+
+/* ---- móvil ---- */
+@media (max-width:760px){
+  footer[data-screen-label=Footer]{ padding:52px 18px 0 !important; }
+  footer[data-screen-label=Footer] > div[style*=grid]{
+    grid-template-columns:1fr !important; gap:36px !important; }
+  footer[data-screen-label=Footer] #footerForm{ max-width:none !important; }
+  /* teléfono + correo seguían lado a lado dentro del formulario: ~120px cada uno */
+  #footerForm > div[style*=grid]{ grid-template-columns:1fr !important; }
+  /* la barra inferior no envolvía: se desbordaba a la derecha y quedaba
+     recortada por el overflow-x:hidden del body */
+  footer[data-screen-label=Footer] > div[style*="justify-content: space-between"]{
+    flex-direction:column !important; align-items:flex-start !important;
+    gap:16px !important; margin-top:32px !important; }
+  footer[data-screen-label=Footer] > div[style*="justify-content: space-between"] > div:first-child{
+    flex-wrap:wrap !important; gap:10px !important; }
+  footer[data-screen-label=Footer] > div[style*="justify-content: space-between"] > div{
+    font-size:13px !important; }
+  footer[data-screen-label=Footer] img[alt*=Pick]{ height:76px !important; }
+  /* picknrideautosales@gmail.com mide más que un iPhone SE */
+  footer[data-screen-label=Footer] a[href^=mailto]{ font-size:16px !important;
+    word-break:break-word !important; overflow-wrap:anywhere !important; }
+
+  .why-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:12px !important;
+             margin-top:32px !important; }
+  .why-tile{ min-height:160px !important; padding:18px 12px !important; }
+  .why-tile svg{ width:34px !important; height:34px !important; margin-bottom:10px !important; }
+  .why-tile > div{ font-size:14px !important; line-height:1.35 !important; }
+}
+
+@media (max-width:400px){
+  .why-tile{ padding:16px 9px !important; }
+  .why-tile > div{ font-size:13px !important; }
+}
 </style>
 </head>
 <body>
@@ -674,7 +742,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div style="font-family: Oswald, sans-serif; font-size: 20px; font-weight: 500; color: #9a9a9a; margin-top: 4px">RAV4</div>
             <div style="display: flex; gap: 38px; margin-top: 20px; font-size: 15px; color: #d5d5d5">
-              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>95,321 mi</span>
+              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>165,000 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
             <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
@@ -734,11 +802,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div style="padding: 20px 20px 22px">
             <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px">
               <h3 style="font-family: Oswald, sans-serif; font-size: 24px; font-weight: 600; color: #ffffff; margin: 0">2019 HONDA</h3>
-              <div style="font-family: Oswald, sans-serif; font-size: 30px; font-weight: 700; color: #f4413f">$17,000</div>
+              <div style="font-family: Oswald, sans-serif; font-size: 30px; font-weight: 700; color: #f4413f">$16,999</div>
             </div>
             <div style="font-family: Oswald, sans-serif; font-size: 20px; font-weight: 500; color: #9a9a9a; margin-top: 4px">CIVIC</div>
             <div style="display: flex; gap: 38px; margin-top: 20px; font-size: 15px; color: #d5d5d5">
-              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>95,321 mi</span>
+              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>54,800 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
             <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
@@ -746,15 +814,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </article>
 
         <article data-cat="truck" style="background: #1c1c1c; border-radius: 6px; overflow: hidden">
-          <div style="height: 290px"><picture class="slot-pic"><source type="image/webp" srcset="assets/img/veh-tacoma-480.webp 480w, assets/img/veh-tacoma-800.webp 800w" sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 800px"><img src="assets/img/veh-tacoma-800.jpg" alt="2021 Toyota Tacoma double cab pickup" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;"></picture></div>
+          <div style="height: 290px"><picture class="slot-pic"><source type="image/webp" srcset="assets/img/veh-tacoma-480.webp 480w, assets/img/veh-tacoma-800.webp 800w" sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 800px"><img src="assets/img/veh-tacoma-800.jpg" alt="2021 Toyota Tacoma TRD Pro pickup" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;"></picture></div>
           <div style="padding: 20px 20px 22px">
             <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px">
               <h3 style="font-family: Oswald, sans-serif; font-size: 24px; font-weight: 600; color: #ffffff; margin: 0">2021 TOYOTA</h3>
               <div style="font-family: Oswald, sans-serif; font-size: 30px; font-weight: 700; color: #f4413f">$28,999</div>
             </div>
-            <div style="font-family: Oswald, sans-serif; font-size: 20px; font-weight: 500; color: #9a9a9a; margin-top: 4px">TACOMA DOUBLE CAB</div>
+            <div style="font-family: Oswald, sans-serif; font-size: 20px; font-weight: 500; color: #9a9a9a; margin-top: 4px">TACOMA TRD PRO</div>
             <div style="display: flex; gap: 38px; margin-top: 20px; font-size: 15px; color: #d5d5d5">
-              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>69,045 mi</span>
+              <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>69,000 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
             <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
@@ -773,30 +841,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="position: relative; max-width: 1000px; margin: 0 auto; text-align: center; pointer-events: none">
       <h2 style="font-family: Oswald, sans-serif; font-size: 44px; font-weight: 700; color: #ffffff; margin: 0">WHY <span style="color: #f4413f">PICK &amp; RIDE</span> AUTO SALES?</h2>
       <p style="font-size: 21px; color: #e6e6e6; margin: 18px auto 0; max-width: 620px; line-height: 1.45; text-wrap: pretty">We're more than just a used car dealership. We're your neighbors, and we're here to help you find the right vehicle at the right price.</p>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 46px">
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+      <div class="why-grid" style="display: grid; grid-template-columns: repeat(3, minmax(0, 224px)); justify-content: center; gap: 20px; margin-top: 46px">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3h6v3H9z"></path><path d="m8.5 13 2.5 2.5L16 10"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">150+ point inspection.<br>All vehicles serviced</div>
         </div>
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><path d="M20 12a8 7 0 1 0-3.2 5.6L20 19l-1-3.3A6.8 6.8 0 0 0 20 12Z"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">Personal and Business<br>financing available.</div>
         </div>
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><path d="M6 3h8l4 4v14H6z"></path><path d="M8 11h6M8 15h4"></path><path d="m14.5 18 1.8 1.8L20 16"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">No pay stubs required.<br>Bring your bank statement</div>
         </div>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px">
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><path d="M12 3.2 14 5l2.6-.4 1 2.4 2.2 1.4-.8 2.5.8 2.5-2.2 1.4-1 2.4L14 19l-2 1.8L10 19l-2.6.4-1-2.4L4.2 15.6 5 13.1l-.8-2.5 2.2-1.4 1-2.4L10 5Z"></path><path d="m9.2 12.2 2 2 3.6-3.8"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">Competitive pricing.<br>Great value for your money</div>
         </div>
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><path d="m12 3.6 2.8 5.8 6.4.9-4.6 4.4 1.1 6.3L12 18l-5.7 3 1.1-6.3-4.6-4.4 6.4-.9Z"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">Great service.<br>4.9 Star (100+ Google Reviews)</div>
         </div>
-        <div style="flex: 0 0 224px; height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
+        <div class="why-tile" style="min-height: 224px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(26,26,26,0.92); border-radius: 6px; padding: 26px 22px 24px; text-align: center">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f4413f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: block; margin: 0 auto 14px"><circle cx="8.5" cy="8" r="2.8"></circle><circle cx="16" cy="9.5" r="2.2"></circle><path d="M3.5 19v-1.6A4 4 0 0 1 7.5 13.5h2a4 4 0 0 1 4 3.9V19"></path><path d="M15 13.6h1.4a4 4 0 0 1 4 3.9V19"></path></svg>
           <div style="font-size: 17px; color: #ffffff; line-height: 1.45">Family Owned and operated</div>
         </div>
@@ -1281,7 +1347,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     '2017 Chevrolet Express 2500 cargo van': 'Chevrolet Express 2500 Cargo 2017',
     '2019 RAM 2500 regular cab pickup': 'RAM 2500 Regular Cab 2019',
     '2019 Honda Civic sedan': 'Honda Civic 2019',
-    '2021 Toyota Tacoma double cab pickup': 'Toyota Tacoma Double Cab 2021',
+    '2021 Toyota Tacoma TRD Pro pickup': 'Toyota Tacoma TRD Pro 2021',
     'Map to Pick & Ride Auto Sales, 5757 Addicks Satsuma Rd, Houston TX 77084':
       'Mapa a Pick & Ride Auto Sales, 5757 Addicks Satsuma Rd, Houston TX 77084',
 
