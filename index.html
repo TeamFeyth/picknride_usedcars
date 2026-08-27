@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Used Cars in Houston | Financing Available | Pick &amp; Ride Auto Sales</title>
-<meta name="description" content="Quality pre-owned cars, trucks, SUVs and vans in Houston. 150-point inspection, personal and business financing, no pay stubs required. Call (832) 262-4073.">
+<meta name="description" content="Quality pre-owned cars, trucks, SUVs and vans in Houston. 150-point inspection, personal and business financing, no pay stubs required. Call (832) 205-4321.">
 <link rel="canonical" href="https://call.picknrideauto.com/">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#101010">
@@ -72,8 +72,19 @@ document.head.appendChild(t);})();</script>
             'loc_physical_ms','loc_interest_ms'];
   var STORE='pnr_attr', saved={};
   try{ saved=JSON.parse(sessionStorage.getItem(STORE)||'{}'); }catch(e){}
-  var qs=new URLSearchParams(location.search||'');
-  KEYS.forEach(function(k){ var v=qs.get(k); if(v && !saved[k]) saved[k]=v; });
+  /* Click ids are read straight out of location.search rather than through
+     URLSearchParams. URLSearchParams follows form-encoding rules, so it turns
+     a literal "+" into a space — which silently corrupts a gclid that some
+     redirect re-encoded on the way here, and a corrupted gclid matches nothing
+     in Google Ads. decodeURIComponent undoes real percent escapes (%3D -> =)
+     and never touches "+", so the value is stored byte for byte, casing and
+     all. Nothing downstream may trim, upper- or lower-case it. */
+  function rawParam(name){
+    var m = (location.search || '').match(new RegExp('[?&]' + name + '=([^&#]*)'));
+    if (!m) return '';
+    try { return decodeURIComponent(m[1]); } catch(e){ return m[1]; }
+  }
+  KEYS.forEach(function(k){ var v=rawParam(k); if(v && !saved[k]) saved[k]=v; });
   if(!saved.landing_page) saved.landing_page=location.origin+location.pathname+location.search;
   if(!saved.referrer)     saved.referrer=document.referrer||'(direct)';
   if(!saved.first_seen)   saved.first_seen=new Date().toISOString();
@@ -670,8 +681,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </nav>
       <div style="display: flex; align-items: center; gap: 12px">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e00000" stroke-width="2.2" stroke-linecap="round"><path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L7.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2Z"></path></svg>
-        <a class="head-phone" href="tel:8322624073" data-cta="header-phone" style="text-decoration: none">
-          <div class="hp-num" style="font-family: Oswald, sans-serif; font-size: 22px; font-weight: 600; color: #ffffff; line-height: 1.1">(832) 262-4073</div>
+        <a class="head-phone" href="tel:+18322054321" data-cta="header-phone" style="text-decoration: none">
+          <div class="hp-num cr-phone" data-i18n-skip style="font-family: Oswald, sans-serif; font-size: 22px; font-weight: 600; color: #ffffff; line-height: 1.1">(832) 205-4321</div>
           <div class="hp-sub" style="font-size: 14px; color: #d9d9d9">Call Us Today</div>
         </a>
         <button type="button" class="pnr-lang pnr-lang-light" data-lang-toggle data-to="es" data-i18n-skip aria-label="Ver esta página en español"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span data-lang-label>Español</span></button>
@@ -689,7 +700,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h1 style="font-family: Oswald, sans-serif; font-size: 66px; font-weight: 700; letter-spacing: 0.005em; color: #ffffff; margin: 34px 0 0; line-height: 1">LOOKING FOR USED CARS IN <span style="color: #f4413f">HOUSTON?</span></h1>
       <p style="font-size: 46px; font-weight: 600; color: #d2d2d2; margin: 14px 0 0; line-height: 1.1">Let's Help You Find the Right One.</p>
       <div class="hero-cta" style="display: flex; gap: 20px; margin-top: 42px; pointer-events: auto">
-        <a href="tel:8322624073" style="display: flex; align-items: center; gap: 12px; background: #e00000; color: #ffffff; font-family: Oswald, sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.03em; padding: 20px 30px; border-radius: 4px">
+        <a href="tel:+18322054321" style="display: flex; align-items: center; gap: 12px; background: #e00000; color: #ffffff; font-family: Oswald, sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.03em; padding: 20px 30px; border-radius: 4px">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L7.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2Z"></path></svg>
           CALL PICK &amp; RIDE
         </a>
@@ -759,7 +770,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>165,000 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -775,7 +786,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>95,321 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -791,7 +802,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>95,321 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -807,7 +818,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>95,321 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -823,7 +834,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>54,800 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -839,7 +850,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg>69,000 mi</span>
               <span style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d5d5d5" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 9h6a3 3 0 0 1 3 3v8M15 4h4M17 2v4"></path></svg>Automatic</span>
             </div>
-            <a href="tel:8322624073" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
+            <a href="tel:+18322054321" data-cta="inventory-call" class="inv-cta" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; height: 52px; background: #ffffff; color: #e00000; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; border-radius: 4px">CALL TO DRIVE<svg width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="#e00000" stroke-width="2.4" stroke-linecap="round"><path d="m2 2 5 5-5 5"></path></svg></a>
           </div>
         </article>
 
@@ -1008,7 +1019,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div style="width: 36px; height: 36px; border-radius: 50%; background: #eceff1; display: flex; align-items: center; justify-content: center; flex: none">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2" stroke-linecap="round"><path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L7.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2Z"></path></svg>
           </div>
-          <a href="tel:8322624073" style="font-size: 18px; color: #1a73e8">(832) 262-4073</a>
+          <a class="cr-phone" data-i18n-skip href="tel:+18322054321" style="font-size: 18px; color: #1a73e8">(832) 205-4321</a>
         </div>
         <div style="display: flex; align-items: center; gap: 14px; margin-top: 12px">
           <div style="width: 36px; height: 36px; border-radius: 50%; background: #eceff1; display: flex; align-items: center; justify-content: center; flex: none">
@@ -1062,7 +1073,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             Can I schedule a test drive online?
             <span data-icon="" style="font-size: 30px; line-height: 1; color: #e00000">+</span>
           </button>
-          <div data-panel="" style="display: none; font-size: 17px; color: #3d3d3d; line-height: 1.55; margin-top: 14px">Yes. Tell us what you're looking for using the form on this page, or call (832) 262-4073 and we'll set up a time.</div>
+          <div data-panel="" style="display: none; font-size: 17px; color: #3d3d3d; line-height: 1.55; margin-top: 14px">Yes. Tell us what you're looking for using the form on this page, or call <a class="cr-phone" data-i18n-skip href="tel:+18322054321" style="color: #1a73e8">(832) 205-4321</a> and we'll set up a time.</div>
         </div>
         <div data-faq="" style="background: #e3e3e3; border-radius: 8px; padding: 22px 26px">
           <button type="button" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; font-family: Nunito, sans-serif; font-size: 20px; font-weight: 600; color: #1c1c1c; cursor: pointer">
@@ -1083,7 +1094,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             How can I contact Pick &amp; Ride Auto Sales?
             <span data-icon="" style="font-size: 30px; line-height: 1; color: #e00000">+</span>
           </button>
-          <div data-panel="" style="display: none; font-size: 17px; color: #3d3d3d; line-height: 1.55; margin-top: 14px">Call (832) 262-4073 or email picknrideautosales@gmail.com. You can also send a message from the form in the footer.</div>
+          <div data-panel="" style="display: none; font-size: 17px; color: #3d3d3d; line-height: 1.55; margin-top: 14px">Call us at <a class="cr-phone" data-i18n-skip href="tel:+18322054321" style="color: #1a73e8">(832) 205-4321</a> or email picknrideautosales@gmail.com. You can also send a message from the form in the footer.</div>
         </div>
         <div data-faq="" style="background: #e3e3e3; border-radius: 8px; padding: 22px 26px">
           <button type="button" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; font-family: Nunito, sans-serif; font-size: 20px; font-weight: 600; color: #1c1c1c; cursor: pointer">
@@ -1119,7 +1130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#e00000" style="margin-top: 3px; flex: none"><path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L7.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2Z"></path></svg>
             <div>
               <div style="font-size: 15px; color: #b9b9b9">Call Us</div>
-              <a href="tel:8322624073" style="font-size: 19px; font-weight: 700; color: #ffffff">(832) 262-4073</a>
+              <a class="cr-phone" data-i18n-skip href="tel:+18322054321" style="font-size: 19px; font-weight: 700; color: #ffffff">(832) 205-4321</a>
             </div>
           </div>
           <div style="display: flex; align-items: flex-start; gap: 14px">
@@ -1318,14 +1329,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     "Yes. Personal and business financing is available, and no pay stubs are required — bring your bank statement. Send us your details through the form above and we'll follow up.":
       'Sí. Hay financiamiento personal y comercial disponible, y no se requieren talones de pago: trae tu estado de cuenta. Envíanos tus datos con el formulario de arriba y te contactamos.',
     'Can I schedule a test drive online?': '¿Puedo agendar una prueba de manejo en línea?',
-    "Yes. Tell us what you're looking for using the form on this page, or call (832) 262-4073 and we'll set up a time.":
-      'Sí. Cuéntanos qué buscas con el formulario de esta página, o llama al (832) 262-4073 y coordinamos un horario.',
+    /* The phone number lives in its own data-i18n-skip element now, so these
+       two fragments are the whole translatable sentence. Never put a phone
+       number back into a DICT string: switching language would overwrite the
+       number CallRail inserted and break call attribution. */
+    "Yes. Tell us what you're looking for using the form on this page, or call":
+      'Sí. Cuéntanos qué buscas con el formulario de esta página, o llama al',
+    "and we'll set up a time.": 'y coordinamos un horario.',
     "Yes. Bring your vehicle by the lot or call us and we'll walk you through the trade-in process.":
       'Sí. Trae tu vehículo al lote o llámanos y te explicamos el proceso de entrega a cuenta.',
     "Warranty options are available so you can drive with confidence. Ask us which options fit the vehicle you're considering.":
       'Hay opciones de garantía disponibles para que manejes con confianza. Pregúntanos cuáles aplican al vehículo que te interesa.',
-    'Call (832) 262-4073 or email picknrideautosales@gmail.com. You can also send a message from the form in the footer.':
-      'Llama al (832) 262-4073 o escribe a picknrideautosales@gmail.com. También puedes enviarnos un mensaje con el formulario de abajo.',
+    'Call us at': 'Llámanos al',
+    'or email picknrideautosales@gmail.com. You can also send a message from the form in the footer.':
+      'o escribe a picknrideautosales@gmail.com. También puedes enviarnos un mensaje con el formulario de abajo.',
     'Monday through Saturday, 9:00 AM to 5:00 PM. Closed Sunday.':
       'De lunes a sábado, de 9:00 AM a 5:00 PM. Domingos cerrado.',
 
@@ -1370,8 +1387,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     'Thank you. We will be in touch shortly.': 'Gracias. Nos comunicamos contigo en breve.',
     'Thank you. We will call you shortly at the number you gave us.':
       'Gracias. Te llamamos en breve al número que nos diste.',
-    'Sorry \u2014 that did not send. Please call us at (832) 262-4073 and we will take care of you.':
-      'Lo sentimos, no se pudo enviar. Llámanos al (832) 262-4073 y te atendemos.',
+    'Sorry \u2014 that did not send. Please call us at (832) 205-4321 and we will take care of you.':
+      'Lo sentimos, no se pudo enviar. Llámanos al (832) 205-4321 y te atendemos.',
     'Please add your first name.': 'Por favor escribe tu nombre.',
     'Please add your last name.': 'Por favor escribe tu apellido.',
     'Please add your name.': 'Por favor escribe tu nombre.',
@@ -1570,7 +1587,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
   /* Localised at call time so the message matches the language on screen. */
   function T(s){ return (window.PNR_T ? window.PNR_T(s) : s); }
-  var CALL_BACK = 'Sorry \u2014 that did not send. Please call us at (832) 262-4073 and we will take care of you.';
+  var CALL_BACK = 'Sorry \u2014 that did not send. Please call us at (832) 205-4321 and we will take care of you.';
 
   /* redirectTo: only the footer form uses it. The test drive form stays
      inline on purpose - it sits mid-page and sending someone away from the
