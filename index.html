@@ -3,6 +3,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Cloudflare Turnstile. Loaded async so it never blocks the page: if it is
+     slow or blocked, the form still renders and the submit handler explains
+     what happened rather than failing silently. -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <title>Used Cars in Houston | Financing Available | Pick &amp; Ride Auto Sales</title>
 <meta name="description" content="Quality pre-owned cars, trucks, SUVs and vans in Houston. 150-point inspection, personal and business financing, no pay stubs required. Call (832) 205-4321.">
 <link rel="canonical" href="https://call.picknrideauto.com/">
@@ -90,6 +94,27 @@ document.head.appendChild(t);})();</script>
   if(!saved.first_seen)   saved.first_seen=new Date().toISOString();
   try{ sessionStorage.setItem(STORE,JSON.stringify(saved)); }catch(e){}
   window.PNR_ATTR=saved;
+
+  /* Mirror the captured attribution into hidden inputs on page load, not at
+     submit time. The ads team verifies this by inspecting the submit button
+     and reading the value attribute of the gclid input, which only works if it
+     is already populated while the page sits there. Runs twice on purpose:
+     once now in case the form is already parsed, once on DOMContentLoaded
+     because this script lives in the head and usually is not. */
+  (function(){
+    function fillAttrInputs(){
+      var a = window.PNR_ATTR || {};
+      var els = document.querySelectorAll('input[data-attr]');
+      for (var i = 0; i < els.length; i++){
+        els[i].value = a[els[i].getAttribute('data-attr')] || '';
+      }
+    }
+    fillAttrInputs();
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', fillAttrInputs);
+    }
+  })();
+
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -945,7 +970,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <button type="submit" style="margin-top: 34px; min-width: 210px; height: 62px; padding: 0 34px; background: #e00000; color: #ffffff; border: 0; border-radius: 6px; font-family: Oswald, sans-serif; font-size: 22px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer">SUBMIT</button>
-        <div class="hp-field" aria-hidden="true"><label for="lfCo">Company website</label><input id="lfCo" name="company_website" type="text" tabindex="-1" autocomplete="off"></div><div id="leadStatus" role="status" data-i18n-skip style="margin-top: 16px; font-size: 16px; min-height: 22px"></div>
+        <input type="hidden" name="gclid" data-attr="gclid"><input type="hidden" name="gbraid" data-attr="gbraid"><input type="hidden" name="wbraid" data-attr="wbraid"><input type="hidden" name="utm_source" data-attr="utm_source"><input type="hidden" name="utm_campaign" data-attr="utm_campaign"><div class="cf-turnstile" data-i18n-skip data-sitekey="0x4AAAAAAEhNswCm2-B0jwik" data-action="lead" data-theme="light" style="margin-top:16px"></div><div class="hp-field" aria-hidden="true"><label for="lfCo">Company website</label><input id="lfCo" name="company_website" type="text" tabindex="-1" autocomplete="off"></div><div id="leadStatus" role="status" data-i18n-skip style="margin-top: 16px; font-size: 16px; min-height: 22px"></div>
       </form>
     </div>
   </section>
@@ -1168,7 +1193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             I consent to Pick &amp; Ride Auto Sales contacting me via text/email for this request, updates, and reminders.
           </label>
           <button type="submit" style="height: 48px; background: #e00000; color: #ffffff; border: 0; border-radius: 3px; font-family: Oswald, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer">SUBMIT</button>
-          <div class="hp-field" aria-hidden="true"><label for="ffCo">Company website</label><input id="ffCo" name="company_website" type="text" tabindex="-1" autocomplete="off"></div><div id="footerStatus" role="status" data-i18n-skip style="font-size: 13px; min-height: 18px"></div>
+          <input type="hidden" name="gclid" data-attr="gclid"><input type="hidden" name="gbraid" data-attr="gbraid"><input type="hidden" name="wbraid" data-attr="wbraid"><input type="hidden" name="utm_source" data-attr="utm_source"><input type="hidden" name="utm_campaign" data-attr="utm_campaign"><div class="cf-turnstile" data-i18n-skip data-sitekey="0x4AAAAAAEhNswCm2-B0jwik" data-action="lead" data-theme="light" style="margin-top:16px"></div><div class="hp-field" aria-hidden="true"><label for="ffCo">Company website</label><input id="ffCo" name="company_website" type="text" tabindex="-1" autocomplete="off"></div><div id="footerStatus" role="status" data-i18n-skip style="font-size: 13px; min-height: 18px"></div>
         </form>
       </div>
     </div>
@@ -1384,6 +1409,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     /* strings the scripts produce at runtime */
     'Sending\u2026': 'Enviando\u2026',
+    'Please complete the verification below and try again.':
+      'Completa la verificación de abajo e inténtalo de nuevo.',
     'Thank you. We will be in touch shortly.': 'Gracias. Nos comunicamos contigo en breve.',
     'Thank you. We will call you shortly at the number you gave us.':
       'Gracias. Te llamamos en breve al número que nos diste.',
@@ -1633,9 +1660,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
+      /* Turnstile injects this input inside its own widget container, so
+         scoping the lookup to the form keeps the two forms on this page from
+         reading each other's token. */
+      var tsEl = form.querySelector('[name="cf-turnstile-response"]');
+      var tsToken = tsEl ? tsEl.value : '';
+      /* Only blocks when the widget actually loaded. If Turnstile is blocked
+         by an extension or fails to load, window.turnstile is undefined and
+         the lead goes through: the server still applies the honeypot, the rate
+         limit and the phone checks. Losing a real customer to our own anti-bot
+         measure is worse than letting one bot past. */
+      if (window.turnstile && !tsToken){
+        say('Please complete the verification below and try again.', false);
+        return;
+      }
+
       var attr = window.PNR_ATTR || {};
       var payload = Object.assign({
         form_name: formId,
+        turnstile_token: tsToken,
         page_type: PAGE_TYPE,
         source: 'Feyth Marketing - Used Cars LP',
         /* Tells DealerCenter which language to call this person back in. */
@@ -1661,6 +1704,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       fetch(endpoint, {
         method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
       }).then(function(r){
+        /* A token cannot be reused, so the widget is reset on every outcome.
+           Without this, a visitor who hits any error can never submit again
+           without reloading the page. */
+        if(window.turnstile){ try { window.turnstile.reset(); } catch(e){} }
+        if(r.status === 403){ say('Please complete the verification below and try again.', false); reset(); return null; }
         if(!r.ok) throw new Error('HTTP ' + r.status);
         return r.json().catch(function(){ return {}; });
       }).then(function(){
