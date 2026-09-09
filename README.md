@@ -1,190 +1,293 @@
-# Pick & Ride Auto Sales — Used Cars Landing Page
+# Pick & Ride Auto — landing pages
 
-Google Ads landing page for the used-vehicle campaign.
-Destination subdomain: **call.picknrideauto.com**
+State of both paid-traffic landing pages as of **4 September 2026**.
 
-Built and maintained by Feyth Marketing. Sister page: `picknride-fleet-lp`
-(Commercial Fleet, `fleet.picknrideauto.com`).
-
----
-
-## What's here
-
-```
-index.html        the page (self-contained; no build step)
-assets/img/       photography, logo, icons — responsive WebP + JPEG fallback
-assets/fonts/     self-hosted Oswald / Nunito subsets
-_headers          Cloudflare Pages caching + security headers
-```
+Written in English to match the code comments; every inline comment in
+`index.html`, the Worker and the Apps Script is English too.
 
 ---
 
-## What this started as
+## 1. The two pages
 
-The source export was a design-tool artifact, not a working page. Converting it
-meant more than dropping images in:
+| | Used cars | Fleet |
+|---|---|---|
+| Repo | `TeamFeyth/picknride_usedcars` | `TeamFeyth/fleet_picknride` |
+| Live | `call.picknrideauto.com` | `fleet.picknrideauto.com` |
+| Branch | `main` | `master` |
+| Also live at | `picknride-usedcars-lp.pages.dev` | `picknride-fleet-lp.pages.dev` |
+| Audience | Retail pre-owned buyers | Commercial vans and trucks |
+| Extra pages | `thank-you.html` | none — inline success |
+| Language toggle | EN / ES | EN / ES |
 
-| Was | Now |
+Both are static Cloudflare Pages sites. Neither has a build step: `index.html`
+is a single self-contained file, fonts and images under `assets/`.
+
+The `.pages.dev` URLs still work and still accept form submissions. They are in
+`ALLOWED_ORIGINS` on the Worker. Decide whether to keep them — they are two more
+surfaces to maintain and two more URLs Google can index.
+
+---
+
+## 2. What is on each page
+
+| | Used cars | Fleet |
+|---|---|---|
+| GTM | `GTM-N98QJB5R` | `GTM-5ZKFQV77` |
+| GA4 | `G-V6NVR31EHE` | `G-FQZ10ZDQ2G` |
+| Google Ads tag | **none, by design** | **none, by design** |
+| CallRail swap | yes | yes |
+| Turnstile | yes | yes |
+
+**Neither page fires a browser-side Google Ads conversion, and neither should.**
+
+Both pages report conversions through one mechanism only: the offline import
+that reads the gclid out of the `PNR_GoogleAds_Conversions` feed. That is the
+mechanism that covers both pages, and it carries the click id, which a browser
+tag does not.
+
+Two things used to be here and were removed on 31 Aug 2026:
+
+- Used cars carried a second `gtag.js` loader for `AW-18369471184`, pasted in by
+  hand and undocumented. It redefined `gtag()` and fired a second `gtag('js')`
+  on every pageview while never reporting a conversion — nothing on the page
+  ever called one. Pure duplication.
+- Fleet configured `AW-18369471184` and fired a conversion event from its submit
+  handler. That would have double counted every fleet lead once the import
+  started working: once from the browser, once from the sheet.
+
+If Ads remarketing audiences are ever wanted, build them from GA4 linked to the
+Ads account. Do not paste a conversion snippet back into either page.
+
+---
+
+## 3. How a lead travels
+
+```
+Visitor (Google ad → gclid in the URL)
+    │
+    ▼
+Landing page
+    ├── captures gclid/gbraid/wbraid/utm_* → sessionStorage (pnr_attr)
+    ├── CallRail swap.js → replaces the visible number
+    └── form → POST JSON to window.PNR.leadEndpoint
+            │
+            ▼
+    Worker  pnr-lead-relay  (Cloudflare)
+            ├── Turnstile, rate limit, honeypot, junk-phone checks
+            ├── → DealerCenter Prospect API (XML)
+            └── → Apps Script /exec
+                        │
+                        ▼
+            Google Sheet «PNR_Leads»  (the lead database)
+                ├── PNR_Leads              ← frozen history
+                ├── PNR_Leads_UsedCars
+                ├── PNR_Leads_Fleet
+                └── PNR_Leads_Unrouted
+                        │
+                        ▼
+            Google Sheet «PNR_Ads_Conversions_FEED»  (separate file)
+                └── PNR_GoogleAds_Conversions
+                        │
+                        ▼
+            Google Ads Data Manager → Form Capture
+```
+
+Conversions live in a **separate spreadsheet** so whoever runs the Ads account
+gets conversion rows and not names, emails and message bodies.
+
+**Phone calls do not travel this path.** CallRail captures them and reports to
+Google Ads through its own native integration. Nothing about calls touches the
+Worker or either sheet.
+
+---
+
+## 4. Identifiers
+
+| What | Value |
 |---|---|
-| `<x-dc>` / `<helmet>` custom elements | unwrapped to real HTML |
-| `{{ grid }}`, `{{ faq }}`, `{{ onSubmitLead }}` template slots | real ids and real handlers |
-| `sc-camel-view-box` on 41 SVGs | `viewBox` (they were rendering blank) |
-| 17 `<image-slot>` placeholders | real `<picture>` with WebP + fallback |
-| `style-hover` / `style-focus` / `style-checked` | genuine CSS states |
-| **0 media queries**, fixed-pixel layout | responsive at 1100 / 760 / 520px |
-| no `<title>`, no meta, no OG | full SEO + social metadata |
-| framework runtime `<script>` tags | removed |
+| Worker | `pnr-lead-relay.team-efd.workers.dev` (source in the fleet repo) |
+| Google Ads account | `479-890-0905` · `team@feythmarketing.com` |
+| Manager account above it | `220-…` — exists, unexplored |
+| Google Ads tag on the account | `AW-18369471184` (not on either page) |
+| Conversion action | `Form Capture` — Primary, in the "Submit lead form" goal |
+| CallRail company | `929436290`, swap key `ee5c10fe11aff979d2f0` — shared by both pages |
+| Business phone | `(832) 205-4321` · `tel:+18322054321` — hardcoded on both pages |
+| Turnstile site key | `0x4AAAAAAEhNswCm2-B0jwik` (public; secret lives only on the Worker) |
+| Lead database | Google Sheet `PNR_Leads` |
+| Conversion feed | Google Sheet `PNR_Ads_Conversions_FEED` |
 
-Verified at 375px: no horizontal overflow and no element wider than the viewport.
-
----
-
-## Go-live checklist
-
-Edit the `window.PNR` block at the top of `index.html`.
-
-- [ ] **`leadEndpoint`** — the deployed `pnr-lead-relay` Worker URL.
-      **Until this is set the forms refuse to submit and tell the visitor to
-      call instead.** They never fake a success.
-- [x] **`gtmId`** — set to `GTM-N98QJB5R`, with the matching `<noscript>`
-      iframe as the first element inside `<body>`.
-- [ ] **CallRail** — wired to company `929436290`. Confirm it is right for this rooftop.
-- [ ] **Inventory is sample data.** The six cards carry placeholder prices,
-      mileage and stock. Replace with real units before spending on traffic.
-- [ ] **Two vehicle photos do not exist** (see below).
-- [ ] **Map** — currently an OpenStreetMap embed centred on the dealership.
-      Swap for a Google Maps embed if you prefer, and confirm the pin location.
+Both pages deliberately share one CallRail company so the campaign can compare
+which page drives more calls. Google Ads attributes by click, not by conversion
+name, so sharing mixes nothing up.
 
 ---
 
-## Lead flow
+## 5. The `window.PNR` block
 
-Both forms POST to the shared `pnr-lead-relay` Worker, which converts the
-submission into a DealerCenter `<ac_application>` document and posts it to the
-**Prospect API**. The Worker lives in the `picknride-fleet-lp` repo under
-`worker/` — one relay serves both landing pages.
+The only block you edit to go live. It sits near the top of `index.html`:
 
-| Form | Fields | `form_name` |
-|---|---|---|
-| Test drive (mid page) | first name, last name, phone, looking-for | `leadForm` |
-| Talk to an expert (footer) | name, phone, email, message, consent | `footerForm` |
-
-Attribution (`gclid`, `gbraid`/`wbraid`, all `utm_*`, `campaignid`, `adgroupid`,
-`creative`, `keyword`, `matchtype`, `device`, geo) is captured on load,
-persisted in `sessionStorage` under `pnr_attr` with **first touch winning**, and
-carried into the DealerCenter `comments` field. That is what makes Google Ads
-offline conversion import possible once deals close.
-
-Spam control: a honeypot field plus a 2-second minimum time-to-submit. Both
-return a normal-looking success and deliver nothing.
-
----
-
-## Images
-
-**39.7 MB → 2.6 MB** as responsive WebP with JPEG fallbacks.
-
-Vehicle photos are matched to the make and model printed on each card:
-
-| Card | Photo | Source |
-|---|---|---|
-| 2018 Toyota RAV4 | *(none)* | **no RAV4 photo exists** |
-| 2017 Chevrolet Express 2500 Cargo | `veh-express-*` | `10.jpeg` |
-| 2018 GMC Savana 2500 Cargo | *(none)* | **no Savana photo exists** |
-| 2019 RAM 2500 Regular Cab | `veh-ram2500-*` | `3.webp` |
-| 2019 Honda Civic | `veh-civic-*` | `5.webp` |
-| 2021 Toyota Tacoma Double Cab | `veh-tacoma-*` | `4.webp` |
-
-### Why two cards have no photo
-
-The asset set contains ten vehicle photos — Nissan Titan XD, Chevrolet
-Silverado, RAM 2500, Toyota Tacoma, Honda Civic, Chevrolet Express (passenger
-and cargo), Mercedes Sprinter, Ford Transit, RAM ProMaster. **None of them is a
-Toyota RAV4 or a GMC Savana.**
-
-Putting any other vehicle under those headings would advertise a vehicle the
-dealership is not selling, on a licensed dealer's paid landing page. Those two
-slots therefore render an explicit "Photo coming soon" tile until either the
-real photos arrive or the listings are replaced with actual inventory.
-
-### Customer gallery
-
-The grid is 4×2 = **8 tiles**, but the build doc lists **nine** photos
-(`c3 c9 c2 c4 c5 c6 c7 c8 c1`). The first eight are used in that order so both
-rows stay full; `c1` is optimised and committed as `gal-9-*` but is not placed.
-Say the word and the grid can go 3×3 to fit all nine.
-
-### Hero photography
-
-The hero uses `Ad 1.jpeg` as the build doc specifies. Worth knowing: the model
-is barefoot in `Ad 1`–`Ad 5`, `Ad 7` and `Ad 8`. For a page selling vehicles to
-Houston buyers that reads off-message. `Ad 6` — the aerial lot shot showing real
-inventory, model in shoes — is used for the "Why Pick & Ride" background and is
-the stronger trust image if you want to swap the hero too.
-
----
-
-## Hosting
-
-Deploy is a direct upload of a **staged public-only directory**, never the repo
-root — everything uploaded to Pages is publicly fetchable:
-
-```bash
-rm -rf dist && mkdir dist
-cp index.html _headers dist/ && cp -r assets dist/assets
-npx wrangler pages deploy dist --project-name=picknride-usedcars-lp --branch=main
+```js
+window.PNR = {
+  leadEndpoint: 'https://pnr-lead-relay.team-efd.workers.dev/lead',
+  callRailSrc:  'https://cdn.callrail.com/companies/929436290/…/swap.js'
+};
 ```
 
-`picknrideauto.com` runs on GoDaddy nameservers, so point the subdomain with:
+**If `leadEndpoint` is missing, both forms stop delivering.** They do not fail
+visibly — the handler tells the visitor to call instead. On 31 Aug 2026 this
+block was deleted from both repos in a commit called *"Remove PNR configuration
+scripts from index.html"*, which meant deploying from the repo would have
+silently killed lead capture on both pages. Never remove it.
 
-```
-CNAME   call   picknride-usedcars-lp.pages.dev
-```
+**If `callRailSrc` is missing, CallRail silently does not load.** It used to
+`return` without a word; it now logs a console warning, because a missing value
+otherwise looks exactly like a working install.
+
+`thank-you.html` has no `window.PNR` block — it has no form and needs no
+endpoint — so its CallRail URL is hardcoded and must be kept in step by hand.
 
 ---
 
-## Bilingual (EN/ES)
+## 6. Deploying
 
-English is the default. Spanish is opt-in via the toggle in the header and in
-the footer bar, and the choice is remembered in `localStorage` under
-`pnr_lang`. A visitor with no stored preference always gets English, including
-when their browser is set to Spanish.
+Cloudflare Pages, connected to GitHub. Push to `main` (used cars) or `master`
+(fleet) and Pages builds.
 
-Switching walks the DOM and swaps any string found in `DICT`, keeping the
-English original in a lookaside so switching back is exact rather than a
-re-translation. Anything absent from `DICT` is left alone: phone numbers,
-prices, mileage, vehicle names, the address.
+**The Worker is different: it is deployed from the Cloudflare editor, not with
+`wrangler deploy`.** `worker/wrangler.jsonc` in the fleet repo is documentation,
+not effective configuration. If anyone ever runs `wrangler deploy`, the plain
+text variables in the dashboard are replaced by whatever is in that file.
+Secrets survive.
 
-To reword or add Spanish copy, edit `DICT` in the i18n `<script>` block. That
-is the only place to change.
+The Apps Script is published with **Deploy → Manage deployments → pencil →
+Version: New version**. Never *New deployment* — that mints a new URL and the
+Worker keeps posting to the old one, which stays alive and answering.
 
-### Two things that are deliberate
+---
 
-- **Checkbox `value` attributes are never translated.** Those values go to
-  DealerCenter, so the CRM must receive `Truck` regardless of the language the
-  visitor read the page in. Only the visible label changes.
-- **Customer reviews stay in the language the customer wrote them in.** They
-  are signed with real names; translating a signed review puts words in a real
-  person's mouth. If the client wants them translated, they should be labelled
-  as translations.
+## 7. Rules that break things
 
-The form now also sends `preferred_language: 'Spanish'` when the page is in
-Spanish. The Worker already supported the field but nothing was populating it,
-so DealerCenter had no way to know which language to call the lead back in.
+1. **Never apply `UPPER`, `LOWER`, `PROPER` or `TRIM` to a `gclid` column.**
+   Click ids are case sensitive.
+2. **Never move or delete a column in the lead tabs.** The script validates 38
+   headers by position and stops writing. Hide them instead.
+3. **Never use *New deployment* in Apps Script.** It changes the URL.
+4. **Never put a phone number inside a translation dictionary string.** The
+   language toggle rewrites whole text nodes, so it would overwrite the number
+   CallRail inserted. Numbers live in their own elements with `data-i18n-skip`.
+   This has broken call attribution once already.
+5. **Do not enable Bot Fight Mode in Cloudflare.** It blocks legitimate
+   crawlers including CallRail's verifier. *Note: the generic `/lp-build`
+   playbook lists Bot Fight Mode as bot-defence layer 3. This project overrides
+   that. The three remaining layers — honeypot, Turnstile, junk-phone
+   heuristics — are all server-side and enough.*
+6. **Assigning a conversion action to a Data Manager connection needs Admin
+   access in Google Ads.** Standard access shows a greyed-out button with no
+   explanation. This blocked the project for over two weeks.
+7. **`ALLOWED_ORIGINS` on the Worker must list an origin exactly**, scheme and
+   all, or the browser's preflight blocks the POST and no lead is ever sent.
 
-### Careful: HTML entities merge text nodes
+---
 
-`Pick &amp; Ride` looks like three fragments in the source but is **one** text
-node in the DOM. A dictionary written by reading the HTML silently fails on
-every string containing `&`. `tests/test_i18n_coverage.py` walks the real DOM
-and fails the build if any visible string has no translation and is not on the
-allow-list. Run it after touching copy.
+## 8. Verification
 
-## Tests
+**Worker health, one request, answers almost everything:**
 
-```bash
-pip install playwright && python3 -m playwright install chromium
-python3 -m http.server 8789 &          # from this directory
-python3 tests/test_page.py http://127.0.0.1:8789/           # 42 assertions
-python3 tests/test_i18n_coverage.py http://127.0.0.1:8789/  # translation coverage
 ```
+curl -s "https://pnr-lead-relay.team-efd.workers.dev/health?deep=1"
+```
+
+Expect `configured`, `sheets_backup`, `sheets_secret`, `turnstile_secret`,
+`turnstile_enforced`, `lead_source` all `true`, and under `apps_script` a
+`min_gclid_length` of **17**. Any other value there means the Worker is talking
+to a stale Apps Script deployment.
+
+**gclid capture** — incognito, `sessionStorage.clear()`, open
+`https://call.picknrideauto.com/?gclid=TeStCaSe-_123%3D`, then in the console:
+
+```js
+JSON.parse(sessionStorage.pnr_attr)
+```
+
+`gclid` must read exactly `TeStCaSe-_123=`. `sessionStorage` is per domain, so
+testing on used cars proves nothing about fleet.
+
+**CallRail swap** — load either page with `?utm_source=facebook` and watch the
+displayed number change. If it does not, check the console for the
+`[PNR] CallRail not loaded` warning.
+
+**Turnstile blocks direct POSTs:**
+
+```
+curl -i -X POST https://pnr-lead-relay.team-efd.workers.dev/lead -H "Content-Type: application/json" -d "{\"name\":\"Bot Test\",\"phone\":\"8322054321\",\"form_name\":\"curl_test\"}"
+```
+
+Expect `403` with `turnstile_failed` / `missing_token`.
+
+**Two invisible limits when testing.** Five submissions per IP per ten minutes
+returns `429`. The same phone on the same form inside ten minutes is treated as
+a double click and answers `200` with **no row written** — the page shows
+success. Vary the phone number between test submissions.
+
+**Duplicate detector.** Run `auditAdsFeed()` in the Apps Script. The baseline
+for `leads appearing in >1 tab` is **2** — two legacy leads that were copied
+into their routed tab on purpose. **If that number is ever 3 or more, something
+is being submitted twice.** That is how the retry bug of 3 Sep was found.
+
+---
+
+## 9. Where this diverges from the standard Feyth stack
+
+`/lp-build` describes Pages Functions, the `feyth-lp-template`, and Zapier
+fanning out to Sheets and the CRM. Pick & Ride predates that and does none of
+it. The differences are deliberate:
+
+| Standard | Here |
+|---|---|
+| `functions/api/lead.js` | a standalone Cloudflare Worker |
+| Zapier Catch Hook | Worker posts straight to DealerCenter and Apps Script |
+| Zap B: CallRail → Sheet | CallRail → Google Ads native only; calls never reach the sheet |
+| Bot Fight Mode on | **off** — it blocks CallRail's verifier |
+| Template with fixed 9 blocks | bespoke pages, no template |
+
+Do not "fix" this toward the standard without a reason. The Worker exists
+because DealerCenter needs a signed XML request that Zapier cannot produce.
+
+---
+
+## 10. Open items
+
+- **`Fleet - Call` is still Primary** in the Contact goal with 0 conversions.
+  It was left that way on purpose: demoting it would leave that goal group
+  without a primary action and trigger a different warning. Known debt.
+- **An API integration uploaded malformed click ids on 18 Aug 2026** and has not
+  run since. Change history identifies it as CallRail, connected by
+  `hello@feythmarketing.com`. It created three conversion actions — `Phone
+  Call`, `First Time Phone Call`, `Repeat Phone Call` — which are all still
+  `Misconfigured`. **Now that CallRail is reinstalled, this can wake up.** See
+  the warning below.
+- **No number pool in CallRail.** A single static tracking number can say a call
+  came from Google, not which click, so no call is attributed at click level.
+- **`gbraid` / `wbraid` are captured but never uploaded.** The feed carries
+  `gclid` only. `adsFeedReport()` counts what that gap costs; it was 0 as of
+  4 Sep.
+- **The `SECRET` shared with the Apps Script is short and guessable.** Rotate it
+  in both places in the same sitting; changing one side drops every lead.
+- **Spreadsheet time zone is `America/Caracas`** on a Houston dealership's sheet.
+  Harmless for Ads — conversion times carry an explicit UTC offset — but
+  `received_at` reads in the wrong local time for whoever calls the lead back.
+
+### Warning about reinstalling CallRail
+
+CallRail's Google Ads integration is still linked to account `479-890-0905`. On
+18 Aug 2026 it uploaded conversions whose click ids Google could not decode,
+which is what marked `Form Capture` as `Misconfigured` in the first place.
+
+Now that the swap script is back on both pages, **check CallRail → Integrations
+→ Google Ads and confirm which conversion action it reports into. It must not be
+`Form Capture`.** If it is, CallRail will start writing unparseable click ids
+into the one conversion action that finally works, and undo two and a half weeks
+of it.
+
+Watch `Form Capture`'s tracking status for a few days after this deploy. It
+should stay out of `Misconfigured`.
