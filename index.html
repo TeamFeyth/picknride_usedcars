@@ -72,25 +72,43 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-V6NVR31EHE');
+  /* Ads base tag. Same loader, same gtag(), no conversion event - see the
+     comment block above before adding anything to this list. */
+  gtag('config', 'AW-18369471184');
 </script>
 <!-- End Google tag (gtag.js) -->
 
-<!-- NO Google Ads tag on this page, by design.
+<!-- Google Ads tag AW-18369471184 - BASE TAG ONLY.
 
-     A second gtag.js loader for AW-18369471184 used to sit here. It redefined
-     gtag() and fired a second gtag('js', ...) on every pageview, and it never
-     reported a conversion, because nothing on this page ever called one. It
-     was pure duplication. Removed.
+     Added 17 Sep 2026 at the client's request ("add Google tag"), because the
+     Ads account was reporting no Google tag detected on this page. Read this
+     before you touch it.
 
-     Both landing pages are now standardised on one model: GTM + GA4 in the
-     browser, and Google Ads conversions delivered ONLY by the offline import
-     that reads the gclid out of the PNR_GoogleAds_Conversions sheet. That is
-     the one mechanism that covers both pages, so it is the only one we keep.
+     What is here: a single extra gtag('config', 'AW-18369471184') line on the
+     gtag.js loader below, which already existed for GA4. That buys Ads-side
+     pageview data and remarketing audiences, and nothing else.
 
-     If Ads remarketing audiences are ever wanted from this page, build them
-     from GA4 (G-V6NVR31EHE) linked to the Ads account. Do not paste an Ads
-     conversion snippet back in: the sheet import is the single source of
-     conversion truth and a page-side tag would double count against it. -->
+     What is deliberately NOT here: a second gtag.js loader, and any kind of
+     conversion event. Do not add either.
+
+     A second gtag.js loader for AW-18369471184 used to sit on this page. It
+     redefined gtag() and fired a second gtag('js', ...) on every pageview
+     while never reporting a conversion, because nothing here ever called one.
+     It was removed on 31 Aug 2026. This is not that block coming back: it is
+     one config line on the loader that was already here.
+
+     Conversions still come from ONE place: the offline import that reads the
+     gclid out of the PNR_GoogleAds_Conversions sheet. It covers both landing
+     pages and it carries the click id, which a browser tag does not. Its
+     conversion action (Form Capture) is Primary in Google Ads, so a
+     browser-side conversion fired from this page would be counted on top of
+     it and Smart Bidding would optimise on inflated numbers. That means no
+     gtag('event', 'conversion', ...) and no send_to with a conversion label,
+     here or in GTM-N98QJB5R.
+
+     If the base tag is not wanted after all: delete the AW- config line
+     below, restore this comment to "NO Google Ads tag on this page, by
+     design", and put the README row back to "none, by design". -->
 
 <!-- CallRail dynamic number insertion (company 929436290).
 
